@@ -1,0 +1,58 @@
+Specification "pts".
+Import "contexts".
+Import "inversion".
+Import "eq".
+Import "cr".
+
+Theorem subj_red : forall G M M' T, ctx_r G -> {G |- of M T} -> {step M M'} -> {G |- of M' T}.
+induction on 3. intros. case H3.
+apply inv_abs to _ H2.
+apply IH to _ H6 H4.
+apply eq_incl_step to H4.
+apply eq_ctx to H1 _ _ H12 H9.
+apply eq_ctx to _ _ _ H12 H10.
+search.
+apply inv_abs to _ H2.
+apply IH to _ H9 H4.
+search.
+apply inv_app to _ H2.
+apply IH to _ H7 H4.
+search.
+apply inv_app to _ H2.
+apply IH to _ H8 H4.
+apply inv_for_t to _ H7.
+apply inv_for to _ H10.
+assert {G |- of (app M1 N') (T' N')}.
+apply eq_incl_step to H4.
+apply eq_subst' to _ _ H14 H16.
+search.
+apply inv_app to _ H2.
+apply inv_abs to _ H6.
+assert {G |- of (for S T'1) (st S4)}.
+inst H12 with n1 = N.
+apply eq_str to _ H10.
+apply eq_for_inv to H16.
+cut H15.
+inst H18 with n1 = N.
+apply inv_for to _ H11.
+inst H24 with n1 = N. cut H25.
+search.
+apply inv_for' to _ H2.
+apply eq_incl_step to H4.
+apply IH to _ H7 H4.
+apply eq_ctx to _ _ _ H9 H8.
+case H6. search.
+search.
+apply inv_for' to _ H2.
+apply IH to _ H8 H4.
+case H6. search.
+search.
+
+
+
+
+
+
+
+
+

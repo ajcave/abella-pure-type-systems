@@ -1,0 +1,56 @@
+Specification "pts".
+
+Theorem mstep_concat : forall M N L, {mstep M N} -> {mstep N L} -> {mstep M L}.
+induction on 1. intros. case H1. search.
+apply IH to H4 H2. search.
+
+Theorem church_rosser : forall M N1 N2, {mstep M N1} -> {mstep M N2} -> exists N, {mstep N1 N} /\ {mstep N2 N}.
+skip.
+
+Theorem cr_eq : forall M N, {eq M N} -> exists L, {mstep M L} /\ {mstep N L}.
+induction on 1. intros. case H1.
+search.
+search.
+apply IH to H2.
+search.
+apply IH to H2.
+apply IH to H3.
+apply church_rosser to H5 H6.
+apply mstep_concat to H4 H8.
+apply mstep_concat to H7 H9.
+search.
+
+Theorem mstep_for_inv : forall U V T1 T2, {mstep (for U T1) (for V T2)} -> {mstep U V} /\ nabla x, {mstep (T1 x) (T2 x)}.
+induction on 1. intros. case H1.
+search.
+case H2.
+apply IH to H3.
+search.
+apply IH to H3.
+search.
+
+Theorem mstep_for_preserve : forall U T M, {mstep (for U T) M} -> exists V T', M = for V T'.
+induction on 1. intros. case H1.
+search.
+case H2.
+apply IH to H3. search.
+apply IH to H3. search.
+
+Theorem eq_includes_mstep : forall M N, {mstep M N} -> {eq M N}.
+induction on 1. intros. case H1. search.
+apply IH to H3. search.
+
+Theorem eq_for_inv : forall U V T1 T2, {eq (for U T1) (for V T2)} -> {eq U V} /\ nabla x, {eq (T1 x) (T2 x)}.
+intros.
+apply cr_eq to H1.
+apply mstep_for_preserve to H2.
+apply mstep_for_inv to H2.
+apply mstep_for_inv to H3.
+apply eq_includes_mstep to H4.
+apply eq_includes_mstep to H5.
+apply eq_includes_mstep to H6.
+apply eq_includes_mstep to H7.
+search.
+
+
+ 

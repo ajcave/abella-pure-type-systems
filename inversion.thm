@@ -1,0 +1,52 @@
+Specification "pts".
+Import "contexts".
+
+Theorem inv_for' : forall G U T S, ctx_r G -> {G |- of (for U T) S} -> exists S1 S2 S3, {G |- rule S1 S2 S3} /\
+  (S = (st S3) \/ ({G |- eq S (st S3)} /\ exists S', {G |- of S (st S')})) /\ {G |- of U (st S1)} /\ nabla x, {G,of x U |- of (T x) (st S2)}.
+induction on 2. intros. case H2.
+apply member_of_name to _ H3. case H4.
+exists S1. exists S2. exists S3. search.
+apply IH to _ H5.
+case H7.
+search. % TODO: !!!! Report that naming bug
+search.
+
+Theorem inv_for : forall G U T S, ctx_r G -> {G |- of (for U T) S} -> exists S1 S2 S3, {G |- rule S1 S2 S3} /\
+  {G |- eq S (st S3)} /\ {G |- of U (st S1)} /\ nabla x, {G,of x U |- of (T x) (st S2)}.
+intros.
+apply inv_for' to H1 H2.
+case H4. search. search.
+
+Theorem inv_for_t : forall G M U T, ctx_r G -> {G |- of M (for U T)} -> exists S, {G |- of (for U T) S}.
+induction on 2. intros. case H2.
+apply member_of_name to _ H3. case H4.
+apply kinds' to _ H3.
+search.
+search.
+apply IH to _ H4.
+apply inv_for to _ H6.
+inst H10 with n1 = N.
+cut H11.
+case H3. search. search.
+search.
+
+Theorem inv_app : forall G M N T, ctx_r G -> {G |- of (app M N) T} -> exists U T' S, {G |- of T (st S)} /\ {G |- eq T (T' N)} /\ {G |- of M (for U T')} /\ {G |- of N U}.
+induction on 2. intros. case H2.
+apply member_of_name to _ H3. case H4.
+exists U. exists T1.
+apply inv_for_t to _ H3.
+apply inv_for to _ H5.
+inst H9 with n1 = N.
+cut H10.
+search.
+apply IH to _ H5.
+exists U1. exists T'. search.
+
+Theorem inv_abs : forall G U M T, ctx_r G -> {G |- of (abs U M) T} -> exists S1 S2 S3 S T', {G |- rule S1 S2 S3}
+  /\ {G |- of U (st S1)} /\ {G |- eq T (for U T')} /\ {G |- of T (st S)} /\ nabla x, {G, of x U |- of (M x) (T' x)}
+  /\ nabla x, {G, of x U |- of (T' x) (st S2)}.
+induction on 2. intros. case H2.
+apply member_of_name to _ H3. case H4.
+search.
+apply IH to _ H5.
+search.
