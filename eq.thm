@@ -25,7 +25,7 @@ apply weaken_several to H4 H15.
 search.
 apply member_prune to H12.
 
-case H8. apply member_of_name to _ H9. case H10. % TODO: More general case analysis principle to allow this proof to work generally
+case H8. apply member_of_name to _ H9. case H10.
 search.
 apply IH to H1 H2 _ _ _ H6 H10 with x = n1, G' = x\ of n2 (U1 x) :: (G' x).
 apply IH to H1 H2 _ _ _ _ H9.

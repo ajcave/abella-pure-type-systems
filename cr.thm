@@ -1,11 +1,103 @@
 Specification "pts".
 
-Theorem mstep_concat : forall M N L, {mstep M N} -> {mstep N L} -> {mstep M L}.
-induction on 1. intros. case H1. search.
-apply IH to H4 H2. search.
+Define pctx : olist -> olist -> prop by
+ pctx nil nil;
+ nabla x, pctx (pr x x::G) (cd x x::notlam x::D) := pctx G D.
+Define is_pr : o -> prop by
+ nabla x, is_pr (pr x x).
+Define is_cd : o -> prop by
+ nabla x, is_cd (cd x x).
+Define is_notlam : o -> prop by
+ nabla x, is_notlam (notlam x).
+
+Theorem mem_cd : forall G D M M', pctx G D -> member (cd M M') D -> is_cd (cd M M') /\ member (notlam M) D.
+induction on 2. intros. case H2. case H1. search.
+case H1. case H3. apply IH to _ H5. case H6. search. search.
+
+Theorem mem_notlam : forall G D P, pctx G D -> member (notlam P) D -> is_notlam (notlam P).
+induction on 2. intros. case H2. case H1. case H1. case H3. search.
+apply IH to _ H5. search.
+
+Theorem mem_pr : forall G D M M', pctx G D -> member (pr M M') G -> is_pr (pr M M').
+induction on 2. intros. case H2. case H1. search.
+case H1. apply IH to _ H3. search.
+
+Theorem mem_pr_cd : forall G D M M', pctx G D -> member (pr M M') G -> member (cd M M') D /\ member (notlam M) D.
+induction on 2. intros. case H2. case H1. search.
+case H1. apply IH to _ H3. search. 
+
+Close sort.
+Theorem pr_subst : forall G D M M' N N', nabla x, pctx G D -> {G,pr x x |- pr (M x) (M' x)} -> {G |- pr N N'}
+-> {G |- pr (M N) (M' N')}.
+induction on 2. intros. case H2.
+apply mem_pr to _ H4. case H5. case H4. search.
+search.
+apply IH to _ H4 H3.
+apply IH to _ H5 H3 with x = n1.
+search.
+apply IH to _ H4 H3.
+apply IH to _ H5 H3 with x = n1.
+search.
+apply IH to _ H4 H3.
+apply IH to _ H5 H3.
+search.
+apply IH to _ H4 H3.
+apply IH to _ H5 H3 with x = n1.
+search.
+search.
+
+Theorem pr_cd1 : forall G D M M' N, pctx G D -> {G |- pr M N} -> {D |- cd M M'} -> {G |- pr N M'}.
+induction on 3. intros. case H3.
+apply mem_cd to _ H4. case H5.
+case H2. apply mem_pr to _ H7. case H8.
+search.
+case H2. apply mem_pr to _ H6. case H7.
+apply IH to _ H6 H4.
+apply IH to _ H7 H5.
+search.
+case H2. apply mem_pr to _ H6. case H7.
+apply IH to _ H6 H4.
+apply IH to _ H7 H5.
+search.
+case H2. apply mem_pr to _ H7. case H8.
+apply IH to _ H7 H5.
+apply IH to _ H8 H6.
+search.
+case H4. apply mem_notlam to _ H9. case H10.
+case H2. apply mem_pr to _ H6. case H7.
+case H6. apply mem_pr to _ H8. case H9.
+apply IH to _ H7 H4.
+apply IH to _ H9 H5.
+search.
+apply IH to _ H6 H4.
+apply IH to _ H7 H5.
+apply pr_subst to _ H9 H8.
+search.
+case H2. apply mem_pr to _ H4. case H5.
+search.
+
+Theorem is_lam_decide : forall G D M M', pctx G D -> {G |- pr M M'} -> {D |- notlam M} \/ exists U N, M = abs U N.
+intros. case H2. apply mem_pr_cd to _ H3. search.
+search. search. search. search. search. 
+
+Theorem cd_total : forall G D M M', pctx G D -> {G |- pr M M'} -> exists N, {D |- cd M N}.
+induction on 2. intros. case H2. apply mem_pr to _ H3. case H4. apply mem_pr_cd to _ H3.
+search.
+apply IH to _ H3. apply IH to _ H4. search.
+apply IH to _ H3. apply IH to _ H4. search.
+apply IH to _ H3. apply IH to _ H4.
+apply is_lam_decide to _ H3. case H7.
+search. case H5. apply mem_cd to _ H8. case H9.
+search.
+apply IH to _ H3. apply IH to _ H4. search.
+search.
 
 Theorem church_rosser : forall M N1 N2, {mstep M N1} -> {mstep M N2} -> exists N, {mstep N1 N} /\ {mstep N2 N}.
 skip.
+
+Theorem mstep_concat : forall M N L, {mstep M N} -> {mstep N L} -> {mstep M L}.
+induction on 1. intros. case H1. search.
+apply IH to H4 H2. search.
 
 Theorem cr_eq : forall M N, {eq M N} -> exists L, {mstep M L} /\ {mstep N L}.
 induction on 1. intros. case H1.

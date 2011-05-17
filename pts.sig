@@ -18,3 +18,9 @@ type eq          tm -> tm -> o.
 type axiom       sort -> sort -> o.
 type rule        sort -> sort -> sort -> o.
 
+% Parallel reduction
+type pr          tm -> tm -> o.
+% Complete development
+type cd          tm -> tm -> o.
+type notlam      tm -> o.
+
