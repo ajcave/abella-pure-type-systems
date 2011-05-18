@@ -1,4 +1,5 @@
 Specification "pts".
+Import "contexts".
 
 Define pctx : olist -> olist -> prop by
  pctx nil nil;
@@ -18,7 +19,7 @@ Theorem mem_notlam : forall G D P, pctx G D -> member (notlam P) D -> is_notlam 
 induction on 2. intros. case H2. case H1. case H1. case H3. search.
 apply IH to _ H5. search.
 
-Theorem mem_pr : forall G D M M', pctx G D -> member (pr M M') G -> is_pr (pr M M').
+Theorem mem_pr : forall G D E, pctx G D -> member E G -> is_pr E.
 induction on 2. intros. case H2. case H1. search.
 case H1. apply IH to _ H3. search.
 
@@ -92,12 +93,77 @@ search.
 apply IH to _ H3. apply IH to _ H4. search.
 search.
 
+Define pwctx : olist -> olist -> olist -> prop by
+ pwctx nil nil nil;
+ nabla x, pwctx (wf x::W) (pr x x::G) (cd x x::notlam x::D) := pwctx W G D.
+
+Theorem mem_wf : forall W G D M, pwctx W G D -> member (wf M) W -> name M.
+induction on 2. intros. case H2. case H1. search. case H1. apply IH to _ H3. search.
+
+Theorem mem_wf_pr : forall W G D M, pwctx W G D -> member (wf M) W -> member (pr M M) G.
+induction on 2. intros. case H2. case H1. search. case H1. apply IH to _ H3. search.
+
+Theorem pr_refl : forall W G D M, pwctx W G D -> {W |- wf M} -> {G |- pr M M}.
+induction on 2. intros. case H2. apply mem_wf_pr to _ H3. search.
+search. apply IH to _ H3. apply IH to _ H4. search.
+apply IH to _ H3. apply IH to _ H4. search.
+apply IH to _ H3. apply IH to _ H4. search.
+
+Theorem pr_includes_step : forall W G D M N, pwctx W G D -> {W |- wf M} -> {step M N} -> {G |- pr M N}.
+induction on 3. intros. case H3. case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4.
+apply pr_refl to _ H6. search.
+case H2. apply mem_wf to _ H5. case H6.
+apply IH to _ H6 H4. apply pr_refl to _ H5. search.
+case H2. apply mem_wf to _ H5. case H6.
+apply IH to _ _ H4. apply pr_refl to _ H6. search.
+case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4. apply pr_refl to _ H5. search.
+case H2. apply mem_wf to _ H4. case H5. case H4. apply mem_wf to _ H6. case H7.
+apply pr_refl to _ H5. apply pr_refl to _ H6. apply pr_refl to _ H7. search.
+case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4. apply pr_refl to _ H6. search.
+case H2. apply mem_wf to _ H5. case H6. apply IH to _ H6 H4. apply pr_refl to _ H5. search.
+
+Theorem mstep_concat : forall M N L, {mstep M N} -> {mstep N L} -> {mstep M L}.
+induction on 2. intros. case H2. search.
+apply IH to H1 H3. search.
+
+Theorem pw_implies_p : forall W G D, pwctx W G D -> pctx G D.
+induction on 1. intros. case H1. search.
+apply IH to H2. search.
+
+Theorem pr_diamond : forall G D M N1 N2, pctx G D -> {G |- pr M N1} -> {G |- pr M N2} -> exists N, {G |- pr N1 N} /\ {G |- pr N2 N}.
+intros.
+apply cd_total to _ H2.
+apply pr_cd1 to _ H3 H4.
+apply pr_cd1 to _ H2 H4.
+search.
+
+Theorem cr1 : forall G D M N1 N2, pctx G D -> {G |- pr M N1} -> {G |- prn M N2} ->
+ exists N, {G |- prn N1 N} /\ {G |- pr N2 N}.
+induction on 3. intros. case H3.
+apply mem_pr to _ H4. case H5.
+search.
+apply IH to _ H2 H4.
+apply pr_diamond to _ H5 H7.
+search.
+
+Theorem cr2 : forall G D M N1 N2, pctx G D -> {G |- prn M N1} -> {G |- prn M N2} ->
+  exists N, {G |- prn N1 N} /\ {G |- prn N2 N}.
+induction on 2. intros. case H2. apply mem_pr to _ H4. case H5.
+search.
+apply IH to _ H4 H3.
+apply cr1 to _ H5 H6.
+search.
+
 Theorem church_rosser : forall M N1 N2, {mstep M N1} -> {mstep M N2} -> exists N, {mstep N1 N} /\ {mstep N2 N}.
 skip.
 
-Theorem mstep_concat : forall M N L, {mstep M N} -> {mstep N L} -> {mstep M L}.
-induction on 1. intros. case H1. search.
-apply IH to H4 H2. search.
+Theorem cr_eq : forall W G D M N, pwctx W G D -> {W |- wf M} -> {W |- wf N} -> {eq M N} -> exists L, {G |- prn M L} /\ {G |- prn N L}.
+induction on 4. intros. case H4.
+exists N.
+apply pr_includes_step to _ _ H5. search.
+search.
+apply IH to _ _ _ H5. search.
+skip.
 
 Theorem cr_eq : forall M N, {eq M N} -> exists L, {mstep M L} /\ {mstep N L}.
 induction on 1. intros. case H1.
@@ -112,25 +178,24 @@ apply mstep_concat to H4 H8.
 apply mstep_concat to H7 H9.
 search.
 
-Theorem mstep_for_inv : forall U V T1 T2, {mstep (for U T1) (for V T2)} -> {mstep U V} /\ nabla x, {mstep (T1 x) (T2 x)}.
-induction on 1. intros. case H1.
-search.
-case H2.
-apply IH to H3.
-search.
-apply IH to H3.
-search.
-
 Theorem mstep_for_preserve : forall U T M, {mstep (for U T) M} -> exists V T', M = for V T'.
 induction on 1. intros. case H1.
 search.
-case H2.
-apply IH to H3. search.
-apply IH to H3. search.
+apply IH to H2.
+case H3. search.
+search.
+
+Theorem mstep_for_inv : forall U V T1 T2, {mstep (for U T1) (for V T2)} -> {mstep U V} /\ nabla x, {mstep (T1 x) (T2 x)}.
+induction on 1. intros. case H1.
+search.
+apply mstep_for_preserve to H2.
+apply IH to H2.
+case H3. search. search.
+
 
 Theorem eq_includes_mstep : forall M N, {mstep M N} -> {eq M N}.
 induction on 1. intros. case H1. search.
-apply IH to H3. search.
+apply IH to H2. search.
 
 Theorem eq_for_inv : forall U V T1 T2, {eq (for U T1) (for V T2)} -> {eq U V} /\ nabla x, {eq (T1 x) (T2 x)}.
 intros.

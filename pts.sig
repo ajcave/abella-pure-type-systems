@@ -20,7 +20,10 @@ type rule        sort -> sort -> sort -> o.
 
 % Parallel reduction
 type pr          tm -> tm -> o.
+type prn         tm -> tm -> o.
 % Complete development
 type cd          tm -> tm -> o.
 type notlam      tm -> o.
+
+type wf          tm -> o.
 

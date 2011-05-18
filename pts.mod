@@ -21,19 +21,21 @@ step (for S T) (for S' T) :- step S S'.
 step (for S T) (for S T') :- pi x\ step (T x) (T' x).
 
 eq M N :- step M N.
-
 eq T T.
 eq T S :- eq S T.
 eq T S :- eq T R, eq R S.
 
 mstep N N.
-mstep M N :- step M N', mstep N' N.
+mstep M N :- mstep M N', step N' N.
 
 pr (abs U M) (abs U' M') :- pr U U', pi x\ pr x x => pr (M x) (M' x).
 pr (for U T) (for U' T') :- pr U U', pi x\ pr x x => pr (T x) (T' x).
 pr (app M N) (app M' N') :- pr M M', pr N N'.
 pr (app (abs U M) N) (M' N') :- pr N N', pi x\ pr x x => pr (M x) (M' x).
 pr (st S) (st S).
+
+prn N N.
+prn M N :- prn M M', pr M' N.
 
 notlam (app M N).
 notlam (for U T).
@@ -44,3 +46,8 @@ cd (for U T) (for U' T') :- cd U U', pi x\ notlam x => cd x x => cd (T x) (T' x)
 cd (app M N) (app M' N') :- notlam M, cd M M', cd N N'.
 cd (app (abs U M) N) (M' N') :- cd N N', pi x\ notlam x => cd x x => cd (M x) (M' x).
 cd (st S) (st S).
+
+wf (st S).
+wf (abs U M) :- wf U, pi x\ wf x => wf (M x).
+wf (for U T) :- wf U, pi x\ wf x => wf (T x).
+wf (app M N) :- wf M, wf N.
