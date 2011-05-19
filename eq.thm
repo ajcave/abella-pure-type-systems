@@ -67,6 +67,10 @@ Theorem ctx_r_to_ctx_or_wf_rel : forall G, ctx_r G -> exists D, ctx_or_wf_rel G 
 induction on 1. intros. case H1. search.
 apply IH to H2. search.
 
+Theorem ctx_or_wf_rel_D_is_wf : forall G D, ctx_or_wf_rel G D -> ctx_wf D.
+induction on 1. intros. case H1. search. apply IH to H2. search.
+apply IH to H2. search.
+
 Theorem eq_ctx' : forall G U V K G' G'' D M T, nabla x,
 {G |- of U (st K)} -> {G |- of V (st K)} ->
 append (G' x) (of x U::wf x::G) (G'' x) ->

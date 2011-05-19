@@ -4,48 +4,73 @@ Import "inversion".
 Import "eq".
 Import "cr".
 
-Theorem subj_red : forall G M M' T, ctx_r G -> {G |- of M T} -> {step M M'} -> {G |- of M' T}.
-induction on 3. intros. case H3.
+Theorem subj_red : forall G M M' T, ctx_r G -> {G |- of M T} -> {G |- step M M'} -> {G |- of M' T}.
+induction on 3. intros.
+apply ctx_r_to_ctx_or_wf_rel to H1. apply ctx_or_wf_rel_D_is_wf to H4.
+case H3. apply member_of_name to _ H6. case H7.
 apply inv_abs to _ H2.
-apply IH to _ H6 H4.
-apply eq_incl_step to H4.
-apply eq_ctx to H1 _ _ H12 H9.
-apply eq_ctx to _ _ _ H12 H10.
+apply IH to _ H8 H6.
+assert {G |- eq S S'}.
+apply eq_ctx to H1 _ _ H14 H11.
+apply eq_ctx to _ _ _ H14 H12.
 search.
 apply inv_abs to _ H2.
-apply IH to _ H9 H4.
+apply IH to _ H11 H6.
 search.
 apply inv_app to _ H2.
-apply IH to _ H7 H4.
+apply IH to _ H9 H6.
 search.
 apply inv_app to _ H2.
-apply IH to _ H8 H4.
-apply inv_for_t to _ H7.
-apply inv_for to _ H10.
+apply IH to _ H10 H6.
+apply inv_for_t to _ H9.
+apply inv_for to _ H12.
 assert {G |- of (app M1 N') (T' N')}.
-apply eq_incl_step to H4.
-apply eq_subst' to _ _ H14 H16.
+assert {G |- eq N N'}.
+apply of_wf_l to _ H10. apply of_wf_l to _ H11. apply of_wf_l to _ H16.
+apply eq_doesnt_depend_on_of to _ H18.
+apply wf_doesnt_depend_on_of to _ H19.
+apply wf_doesnt_depend_on_of to _ H20.
+apply wf_doesnt_depend_on_of to _ H21.
+apply eq_subst to _ H23 H24 H22 H25.
+apply of_wf_l to _ H7. inst H25 with n1 = N. cut H28.
+assert (forall M, member M D -> member M G). intros.
+apply ctx_or_wf_rel_subset2 to _ H30. search.
+monotone H29 with G.
+monotone H26 with G.
 search.
 apply inv_app to _ H2.
-apply inv_abs to _ H6.
+apply inv_abs to _ H11.
 assert {G |- of (for S T'1) (st S4)}.
-inst H12 with n1 = N.
-apply eq_str to _ H10.
-apply eq_for_inv to H16.
-cut H15.
-inst H18 with n1 = N.
-apply inv_for to _ H11.
-inst H24 with n1 = N. cut H25.
+inst H17 with n1 = N.
+apply eq_doesnt_depend_on_of to _ H15.
+apply of_wf_l to _ H16.
+apply of_wf_l to _ H19.
+apply wf_doesnt_depend_on_of to _ H22.
+apply wf_doesnt_depend_on_of to _ H23.
+apply eq_for_inv to _ H24 H25 H21.
+assert (forall M, member M D -> member M G). intros.
+apply ctx_or_wf_rel_subset2 to _ H28. search.
+monotone H26 with G.
+apply of_wf_l to _ H14.
+cut H20.
+inst H27 with n1 = N.
+apply of_wf_l to _ H12.
+apply wf_doesnt_depend_on_of to _ H33.
+cut H32.
+monotone H35 with G.
+case H22. apply member_of_name to _ H37. case H38.
+inst H38 with n1 = N. cut H39.
+apply of_wf_l to _ H9.
+search. 
+apply inv_for' to _ H2.
+assert {G |- eq S S'}.
+apply IH to _ H9 H6.
+apply eq_ctx to _ _ _ H11 H10.
+case H8. search.
 search.
 apply inv_for' to _ H2.
-apply eq_incl_step to H4.
-apply IH to _ H7 H4.
-apply eq_ctx to _ _ _ H9 H8.
-case H6. search.
-search.
-apply inv_for' to _ H2.
-apply IH to _ H8 H4.
-case H6. search.
+apply IH to _ H10 H6.
+case H8. search.
 search.
 
 

@@ -240,23 +240,27 @@ apply prn_implies_wf to _ H4. case H7.
 apply eq_includes_pr to _ _ H5. search.
 apply eq_includes_pr to _ _ H5. search.
 
-Theorem eq_for_inv : forall W G D U V T1 T2, pwctx W G D -> {W |- wf (for U T1)} -> {W |- wf (for V T2)} -> {W |- eq (for U T1) (for V T2)} -> {W |- eq U V} /\ nabla x, {W, wf x |- eq (T1 x) (T2 x)}.
-intros.
+Theorem exists_pwctx : forall W, ctx_wf W -> exists G D, pwctx W G D.
+induction on 1. intros. case H1. search.
+apply IH to H2. search.
+
+Theorem eq_for_inv : forall W U V T1 T2, ctx_wf W -> {W |- wf (for U T1)} -> {W |- wf (for V T2)} -> {W |- eq (for U T1) (for V T2)} -> {W |- eq U V} /\ nabla x, {W, wf x |- eq (T1 x) (T2 x)}.
+intros. apply exists_pwctx to H1.
 apply cr_eq to _ _ _ H4.
-apply pw_implies_p to H1.
-apply prn_for_preserve to _ H5.
-apply prn_for_inv to _ H5.
+apply pw_implies_p to H5.
+apply prn_for_preserve to _ H6.
 apply prn_for_inv to _ H6.
-case H2. apply mem_wf to _ H12. case H13.
-apply eq_includes_prn to _ _ H8.
-case H3. apply mem_wf to _ H15. case H16.
-apply eq_includes_prn to _ H13 H9.
-apply eq_includes_prn to _ _ H10.
-apply eq_includes_prn to _ H16 H11.
-apply prn_implies_wf to _ H9. case H20.
-apply prn_implies_wf to _ H10. case H22. search.
+apply prn_for_inv to _ H7.
+case H2. apply mem_wf to _ H13. case H14.
+apply eq_includes_prn to _ _ H9.
+case H3. apply mem_wf to _ H16. case H17.
+apply eq_includes_prn to _ H14 H10.
+apply eq_includes_prn to _ _ H11.
+apply eq_includes_prn to _ H17 H12.
+apply prn_implies_wf to _ H10. case H21.
+apply prn_implies_wf to _ H11. case H23. search.
 search.
-apply prn_implies_wf to _ H10. case H21. search.
+apply prn_implies_wf to _ H11. case H22. search.
 search.
 
 
