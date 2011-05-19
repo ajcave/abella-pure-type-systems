@@ -11,12 +11,22 @@ Define is_of : o -> prop by
   nabla x, is_of (of x T);
   nabla x, is_of (wf x).
 
+Define ctx_wf : olist -> prop by
+  ctx_wf nil;
+  nabla x, ctx_wf (wf x::G) := ctx_wf G.
+
+Define is_wf : o -> prop by
+  nabla x, is_wf (wf x).
 
 Theorem member_of_name : forall G E, ctx_r G -> member E G -> is_of E.
 induction on 2. intros. case H2.
 case H1. search. case H1. case H3.
 search.
 apply IH to _ H6. search.
+
+Theorem member_wf : forall G E, ctx_wf G -> member E G -> is_wf E.
+induction on 2. intros. case H2. case H1. search.
+case H1. apply IH to _ H3. search.
 
 Theorem mem_of_wf : forall G M T , ctx_r G -> member (of M T) G -> member (wf M) G.
 induction on 2. intros. case H2. case H1. search.
@@ -57,6 +67,11 @@ Theorem member_prune : forall G E, nabla (n:tm),
  member (E n) G -> (exists E', E = x\E').
 induction on 1. intros. case H1. search.
 apply IH to H2. search.
+
+% This appears to be the only theorem that depends on what we take for "axioms" of the PTS
+Theorem axiom_strengthen : forall G D S1 S2, ctx_r G -> {G |- axiom S1 S2} -> {D |- axiom S1 S2}.
+intros. case H2. apply member_of_name to _ H3. case H4.
+search.
 
 % This appears to be the only theorem that depends on what we take for "rules" of the PTS.
 Theorem rule_strengthen : forall G D S1 S2 S3, ctx_r G -> {G |- rule S1 S2 S3} -> {D |- rule S1 S2 S3}.
