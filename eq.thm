@@ -2,35 +2,25 @@ Specification "pts".
 Import "contexts".
 
 Close sort.
-Theorem eq_ctx' : forall G U V K G' G'' D M T, nabla x, {G |- of U (st K)} -> {G |- of V (st K)} -> append (G' x) (of x U::G) (G'' x) -> append (G' x) (of x V::G) (D x) -> ctx_r (G'' x) -> {eq U V} -> {G'' x |- of (M x) (T x)} -> {(D x) |- of (M x) (T x)}.
+Theorem eq_ctx' : forall G U V K G' G'' D M T, nabla x, {G |- of U (st K)} -> {G |- of V (st K)} -> append (G' x) (of x U::wf x::G) (G'' x) -> append (G' x) (of x V::wf x::G) (D x) -> ctx_r (G'' x) -> {G |- eq U V} -> {G'' x |- of (M x) (T x)} -> {(D x) |- of (M x) (T x)}.
 induction on 7. intros. case H7.
 apply member_of_name to _ H8. case H9.
 apply append_member to H3 H8.
 case H10.
 apply append_member_l to H4 H11.
 search.
-case H11.
-assert (member (of n2 (T2 n1)) (of n1 (V n2)::G n2)).
-apply append_member_r to H4 H13.
+case H11. case H12.
+assert (member (of n2 (T2 n1)) (of n1 (V n2)::wf n1::G n2)).
+apply append_member_r to H4 H14.
 search.
-apply append_member to H3 H8.
-case H10.
-apply member_fresh_append to _ H3 H11.
-case H11.
-assert (member (of n1 V) (of n1 V :: G)).
-apply append_member_r to H4 H12.
-assert {D n1 |- of n1 V}.
-assert {G,of n1 V |- of U (st K)}.
-apply weaken_several to H4 H15.
-search.
-apply member_prune to H12.
+skip.
 case H8. apply member_of_name to _ H9. case H10.
 search.
-apply IH to H1 H2 _ _ _ H6 H10 with x = n1, G' = x\ of n2 (U1 x) :: (G' x).
+apply IH to H1 H2 _ _ _ H6 H10 with x = n1, G' = x\ of n2 (U1 x) :: wf n2 :: (G' x).
 apply IH to H1 H2 _ _ _ _ H9.
 apply rule_strengthen to _ H8 with D = D n1.
 search.
-assert (append (of n2 (U1 n1)::(G' n1)) (of n1 U::G) (of n2 (U1 n1)::(G'' n1))).
+assert (append (of n2 (U1 n1)::wf n2::(G' n1)) (of n1 U::wf n1::G) (of n2 (U1 n1)::wf n2::(G'' n1))).
 apply IH to H1 H2 H12 _ _ H6 H10.
 apply IH to H1 H2 _ _ _ _ H9.
 apply IH to H1 H2 H12 _ _ _ H11.
@@ -41,27 +31,27 @@ apply IH to H1 H2 _ _ _ _ H9.
 search.
 apply IH to H1 H2 _ _ _ _ H9.
 apply IH to H1 H2 _ _ _ _ H10.
-apply eq_str to _ H8.
-search.
+skip.
 
-Theorem eq_ctx : forall G U V K M T, nabla x, ctx_r G -> {G |- of U (st K)} -> {G |- of V (st K)} -> {eq U V} -> {G, of x U |- of (M x) (T x)} -> {G, of x V |- of (M x) (T x)}.
+Theorem eq_ctx : forall G U V K M T, nabla x, ctx_r G -> {G |- of U (st K)} -> {G |- of V (st K)} -> {G |- eq U V} -> {G, wf x, of x U |- of (M x) (T x)} -> {G, wf x, of x V |- of (M x) (T x)}.
 intros.
 apply eq_ctx' to H2 H3 _ _ _ H4 H5. search.
 
-Theorem eq_incl_step : forall M N, {step M N} -> {eq M N}.
+Theorem eq_incl_step : forall G M N, ctx_r G -> {step M N} -> {eq M N}.
 intros. search.
 
-Theorem eq_for_congr_l : forall U V T, {eq U V} -> {eq (for U T) (for V T)}.
-induction on 1. intros. case H1. search. search. apply IH to H2 with T = T. search.
-apply IH to H2 with T = T. apply IH to H3 with T = T. search.
+Theorem eq_for_congr_l : forall G U V T, nabla x, ctx_r G -> {G |- eq U V} -> {G,wf x |- wf (T x)} -> {G |- eq (for U T) (for V T)}.
+induction on 2. intros. case H2. apply member_of_name to _ H4. case H5.
+search. search. apply IH to _ H4 _ with T = T. search.
+apply IH to _ H4 _ with T = T. apply IH to _ H6 _ with T = T. search.
 
-Theorem eq_for_congr_r : forall U T1 T2, nabla x, {eq (T1 x) (T2 x)} -> {eq (for U T1) (for U T2)}.
-induction on 1. intros. case H1. search. search.
-apply IH to H2 with U = U. search.
-apply IH to H2 with U = U. apply IH to H3 with U = U. search.
+Theorem eq_for_congr_r : forall G U T1 T2, nabla x, ctx_r G -> {G |- wf U} -> {G |- eq (T1 x) (T2 x)} -> {G |- eq (for U T1) (for U T2)}.
+induction on 3. intros. case H3. apply member_of_name to _ H4. case H5. search. search.
+apply IH to _ _ H4 with U = U. search.
+apply IH to _ _ H4 with U = U. apply IH to _ _ H6 with U = U. search.
 
-Theorem eq_for_congr : forall U V T1 T2, nabla x, {eq U V} -> {eq (T1 x) (T2 x)} -> {eq (for U T1) (for V T2)}.
-intros. apply eq_for_congr_l to H1 with T = T2. apply eq_for_congr_r to H2 with U = U. search.
+Theorem eq_for_congr : forall G U V T1 T2, nabla x, ctx_r G -> {G |- eq U V} -> {G |- eq (T1 x) (T2 x)} -> {G |- eq (for U T1) (for V T2)}.
+% Here. More wfness. intros. apply eq_for_congr_l to _ H2 _ with T = T2. apply eq_for_congr_r to H2 with U = U. search.
 
 Theorem eq_abs_congr_l : forall U V T, {eq U V} -> {eq (abs U T) (abs V T)}.
 induction on 1. intros. case H1. search. search. apply IH to H2 with T = T. search.

@@ -5,24 +5,27 @@ Define name : tm -> prop by
 
 Define ctx_r : olist -> prop by
   ctx_r nil;
-  nabla x, ctx_r (of x T :: G ) := ctx_r G /\ exists K, {G |- of T K} .
+  nabla x, ctx_r (of x T :: wf x :: G ) := ctx_r G /\ exists K, {G |- of T K} .
 
 Define is_of : o -> prop by
-  nabla x, is_of (of x T).
+  nabla x, is_of (of x T);
+  nabla x, is_of (wf x).
 
 
 Theorem member_of_name : forall G E, ctx_r G -> member E G -> is_of E.
 induction on 2. intros. case H2.
-case H1. search.
-apply IH to _ H3. case H1. search.
+case H1. search. case H1. case H3.
 search.
+apply IH to _ H6. search.
 
-Theorem kinds' : forall G T, nabla x, ctx_r (G x) -> member (of x T) (G x) -> exists K, {G x |- of T K}.
+Theorem mem_of_wf : forall G M T , ctx_r G -> member (of M T) G -> member (wf M) G.
+induction on 2. intros. case H2. case H1. search.
+case H1. case H3. apply IH to _ H6. search.
+
+Theorem kinds' : forall G M T, ctx_r G -> member (of M T) G -> exists K, {G |- of T K}.
 induction on 2. intros. case H2.
-case H1. search.
-apply IH to _ H3.
-case H1. search.
-search.
+case H1. search. case H1. case H3.
+apply IH to _ H6.
 search.
 
 Define append : olist -> olist -> olist -> prop by
@@ -46,6 +49,10 @@ Theorem weaken_several : forall G G' G'' M T, append G G' G'' -> {G' |- of M T} 
 induction on 1. intros. case H1. search.
 apply IH to H3 H2. search.
 
+Theorem weaken_several_eq : forall G G' G'' M N, append G G' G'' -> {G' |- eq M N} -> {G'' |- eq M N}.
+induction on 1. intros. case H1. search.
+apply IH to H3 H2. search.
+
 Theorem member_prune : forall G E, nabla (n:tm),
  member (E n) G -> (exists E', E = x\E').
 induction on 1. intros. case H1. search.
@@ -56,33 +63,16 @@ Theorem rule_strengthen : forall G D S1 S2 S3, ctx_r G -> {G |- rule S1 S2 S3} -
 intros. case H2. apply member_of_name to _ H3. case H4.
 search. search. search. search.
 
-Theorem step_strengthen : forall G M N, ctx_r G -> {G |- step M N} -> {step M N}.
-induction on 2. intros. case H2. apply member_of_name to _ H3. case H4.
-apply IH to _ H3. search.
-apply IH to _ H3. search.
-apply IH to _ H3. search.
-apply IH to _ H3. search.
-search.
-apply IH to _ H3. search.
-apply IH to _ H3. search.
-
-Theorem eq_str : forall G M N, ctx_r G -> {G |- eq M N} -> {eq M N}.
-induction on 2. intros. case H2.
-apply member_of_name to _ H3. case H4.
-apply step_strengthen to _ H3.
-search.
-search.
-apply IH to _ H3. search.
-apply IH to _ H3. apply IH to _ H4.
-search.
-
-Theorem member_fresh_append : forall G G' G'' U T, nabla x, ctx_r (G'' x) -> append (G' x) (of x U::G) (G'' x) -> member (of x T) (G' x) -> false.
+Theorem member_fresh_append : forall G G' G'' U T, nabla x, ctx_r (G'' x) -> append (G' x) (of x U::G) (G'' x) -> member (of x T) (G' x) -> false. 
 induction on 2. intros. case H2. case H3.
-case H3.
-case H1.
+case H1. case H3.
+case H4.
+case H7.
+apply IH to _ H8 H9.
+case H4.
 assert (member (of n1 U) (of n1 U :: G)).
-apply append_member_r to H4 H7.
-apply member_prune to H8.
-apply IH to _ H4 H5.
-case H1. search.
-search.
+apply append_member_r to H7 H8.
+apply member_prune to H9.
+
+
+
