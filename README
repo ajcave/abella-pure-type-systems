@@ -1,0 +1,5 @@
+Church Rosser and subject reduction for pure type systems in Abella. 
+The Church Rosser result can be taken in isolation by dropping all the typing-related files.
+Subject reduction depends on Church Rosser.
+
+Run 'make'
