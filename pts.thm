@@ -1,5 +1,5 @@
 Specification "pts".
-Import "inversion".
+Import "typing_inversion".
 Import "eq_typing".
 Import "eq_congr".
 Import "cr_eq".

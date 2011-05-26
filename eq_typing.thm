@@ -69,7 +69,7 @@ Theorem ctx_to_ctx_or_wf_rel : forall G, ctx G -> exists D, ctx_or_wf_rel G D.
 induction on 1. intros. case H1. search.
 apply IH to H2. search.
 
-Theorem ctx_or_wf_rel_D_is_wf : forall G D, ctx_or_wf_rel G D -> ctx_wf D.
+Theorem ctx_or_wf_rel_D_is_wf : forall G D, ctx_or_wf_rel G D -> wf_ctx D.
 induction on 1. intros. case H1. search. apply IH to H2. search.
 apply IH to H2. search.
 
