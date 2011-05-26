@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "typing".
 Import "lib".
 Import "wf_contexts".
 Import "typing_contexts".

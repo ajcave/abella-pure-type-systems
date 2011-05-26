@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "cr_eq".
 Import "wf_contexts".
 Import "cr".
 Import "eq_congr".

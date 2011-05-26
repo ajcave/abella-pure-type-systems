@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "tm".
 
 Define is_wf : o -> prop by
   nabla x, is_wf (wf x).

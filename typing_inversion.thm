@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "typing".
 Import "typing_contexts".
 
 Theorem inv_for' : forall G U T S, ctx G -> {G |- of (for U T) S} -> exists S1 S2 S3, {G |- rule S1 S2 S3} /\

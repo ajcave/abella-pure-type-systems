@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "eq".
 Import "wf_contexts".
 
 Theorem eq_for_congr_l : forall G U V T, nabla x, wf_ctx G -> {G |- eq U V} -> {G,wf x |- wf (T x)} -> {G |- eq (for U T) (for V T)}.

@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "typing".
 Import "lib".
 
 Define name : tm -> prop by

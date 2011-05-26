@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "tm".
 
 Define append : olist -> olist -> olist -> prop by
  append nil Ys Ys;

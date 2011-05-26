@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "cr_typing".
 Import "typing_inversion".
 Import "eq_typing".
 Import "eq_congr".

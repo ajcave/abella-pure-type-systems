@@ -1,4 +1,4 @@
-Specification "pts".
+Specification "cr".
 Import "wf_contexts".
 
 Define pr_ctx : olist -> prop by
