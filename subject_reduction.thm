@@ -76,12 +76,3 @@ apply inv_for' to _ H2.
 apply IH to _ H10 H6.
 case H8. search.
 search.
-
-
-
-
-
-
-
-
-
