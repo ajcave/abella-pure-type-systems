@@ -1,5 +1,5 @@
 Specification "pts".
-Import "wf".
+Import "wf_contexts".
 
 Define pctx : olist -> olist -> prop by
  pctx nil nil;
