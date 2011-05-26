@@ -6,14 +6,14 @@ induction on 1. intros. case H1. case H2. case H3. search.
 search. search. apply IH to H2. apply IH to H3. search.
 apply IH to H2. apply IH to H3. search. apply IH to H2. apply IH to H3. search.
 
-Theorem of_wf_l : forall G M T, ctx_r G -> {G |- of M T} -> {G |- wf M}.
+Theorem of_wf_l : forall G M T, ctx G -> {G |- of M T} -> {G |- wf M}.
 induction on 2. intros. case H2. apply mem_of_wf to _ H3. search.
 search. apply IH to _ H4. apply IH to _ H5. apply wf_str to H7. search.
 apply IH to _ H4. apply IH to _ H5. apply IH to _ H6. apply wf_str to H8. apply wf_str to H9.
 search.
 apply IH to _ H4. apply IH to _ H3. search. apply IH to _ H4. apply IH to _ H5. search.
 
-Theorem of_wf : forall G M T, ctx_r G -> {G |- of M T} -> {G |- wf T}.
+Theorem of_wf : forall G M T, ctx G -> {G |- of M T} -> {G |- wf T}.
 induction on 2. intros. case H2. apply kinds' to _ H3.
 apply of_wf_l to _ H4. search.
 search.
@@ -24,7 +24,7 @@ apply of_wf_l to _ H4. inst H7 with n1 = N.
 cut H9. search.
 apply of_wf_l to _ H4. search.
 
-Theorem inv_for' : forall G U T S, ctx_r G -> {G |- of (for U T) S} -> exists S1 S2 S3, {G |- rule S1 S2 S3} /\
+Theorem inv_for' : forall G U T S, ctx G -> {G |- of (for U T) S} -> exists S1 S2 S3, {G |- rule S1 S2 S3} /\
   (S = (st S3) \/ ({G |- eq S (st S3)} /\ exists S', {G |- of S (st S')})) /\ {G |- of U (st S1)} /\ nabla x, {G,wf x,of x U |- of (T x) (st S2)}.
 induction on 2. intros. case H2.
 apply member_of_name to _ H3. case H4.
@@ -35,13 +35,13 @@ search. % TODO: !!!! Report that naming bug
 apply of_wf to _ H5.
 search.
 
-Theorem inv_for : forall G U T S, ctx_r G -> {G |- of (for U T) S} -> exists S1 S2 S3, {G |- rule S1 S2 S3} /\
+Theorem inv_for : forall G U T S, ctx G -> {G |- of (for U T) S} -> exists S1 S2 S3, {G |- rule S1 S2 S3} /\
   {G |- eq S (st S3)} /\ {G |- of U (st S1)} /\ nabla x, {G,wf x,of x U |- of (T x) (st S2)}.
 intros.
 apply inv_for' to H1 H2.
 case H4. search. search.
 
-Theorem inv_for_t : forall G M U T, ctx_r G -> {G |- of M (for U T)} -> exists S, {G |- of (for U T) S}.
+Theorem inv_for_t : forall G M U T, ctx G -> {G |- of M (for U T)} -> exists S, {G |- of (for U T) S}.
 induction on 2. intros. case H2.
 apply member_of_name to _ H3. case H4.
 apply kinds' to _ H3.
@@ -55,7 +55,7 @@ cut H12.
 case H3. search. search.
 search.
 
-Theorem inv_app : forall G M N T, ctx_r G -> {G |- of (app M N) T} -> exists U T' S, {G |- of T (st S)} /\ {G |- eq T (T' N)} /\ {G |- of M (for U T')} /\ {G |- of N U}.
+Theorem inv_app : forall G M N T, ctx G -> {G |- of (app M N) T} -> exists U T' S, {G |- of T (st S)} /\ {G |- eq T (T' N)} /\ {G |- of M (for U T')} /\ {G |- of N U}.
 induction on 2. intros. case H2.
 apply member_of_name to _ H3. case H4.
 exists U. exists T1.
@@ -67,7 +67,7 @@ search.
 apply IH to _ H5.
 exists U1. exists T'. apply of_wf_l to _ H6. search.
 
-Theorem inv_abs : forall G U M T, ctx_r G -> {G |- of (abs U M) T} -> exists S1 S2 S3 S T', {G |- rule S1 S2 S3}
+Theorem inv_abs : forall G U M T, ctx G -> {G |- of (abs U M) T} -> exists S1 S2 S3 S T', {G |- rule S1 S2 S3}
   /\ {G |- of U (st S1)} /\ {G |- eq T (for U T')} /\ {G |- of T (st S)} /\ nabla x, {G, wf x, of x U |- of (M x) (T' x)}
   /\ nabla x, {G, wf x, of x U |- of (T' x) (st S2)}.
 induction on 2. intros. case H2.

@@ -4,9 +4,9 @@ Import "inversion".
 Import "eq".
 Import "cr".
 
-Theorem subj_red : forall G M M' T, ctx_r G -> {G |- of M T} -> {G |- step M M'} -> {G |- of M' T}.
+Theorem subj_red : forall G M M' T, ctx G -> {G |- of M T} -> {G |- step M M'} -> {G |- of M' T}.
 induction on 3. intros.
-apply ctx_r_to_ctx_or_wf_rel to H1. apply ctx_or_wf_rel_D_is_wf to H4.
+apply ctx_to_ctx_or_wf_rel to H1. apply ctx_or_wf_rel_D_is_wf to H4.
 case H3. apply member_of_name to _ H6. case H7.
 apply inv_abs to _ H2.
 apply IH to _ H8 H6.

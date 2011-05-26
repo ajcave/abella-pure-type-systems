@@ -63,7 +63,7 @@ apply IH to _ H3. apply IH to _ H5.
 apply wf_doesnt_depend_on_of to _ H4.
 search.
 
-Theorem ctx_r_to_ctx_or_wf_rel : forall G, ctx_r G -> exists D, ctx_or_wf_rel G D.
+Theorem ctx_to_ctx_or_wf_rel : forall G, ctx G -> exists D, ctx_or_wf_rel G D.
 induction on 1. intros. case H1. search.
 apply IH to H2. search.
 
@@ -75,7 +75,7 @@ Theorem eq_ctx' : forall G U V K G' G'' D M T, nabla x,
 {G |- of U (st K)} -> {G |- of V (st K)} ->
 append (G' x) (of x U::wf x::G) (G'' x) ->
 append (G' x) (of x V::wf x::G) (D x) ->
-ctx_r (G'' x) -> {G |- eq U V} ->
+ctx (G'' x) -> {G |- eq U V} ->
 {G'' x |- of (M x) (T x)} ->
 {D x |- of (M x) (T x)}.
 induction on 7. intros. case H7.
@@ -113,7 +113,7 @@ apply IH to _ _ _ _ _ H6 H9.
 search.
 apply IH to _ _ _ _ _ H6 H9.
 apply IH to _ _ _ _ _ H6 H10.
-apply ctx_r_to_ctx_or_wf_rel to H5.
+apply ctx_to_ctx_or_wf_rel to H5.
 apply eq_doesnt_depend_on_of to _ H8.
 monotone H14 with (D n1).
 intros.
@@ -126,7 +126,7 @@ assert (member (X n1) (of n1 V::wf n1::G)).
 apply append_member_r to H4 H21. search.
 search.
 
-Theorem eq_ctx : forall G U V K M T, nabla x, ctx_r G -> {G |- of U (st K)} -> {G |- of V (st K)} -> {G |- eq U V} -> {G, wf x, of x U |- of (M x) (T x)} -> {G, wf x, of x V |- of (M x) (T x)}.
+Theorem eq_ctx : forall G U V K M T, nabla x, ctx G -> {G |- of U (st K)} -> {G |- of V (st K)} -> {G |- eq U V} -> {G, wf x, of x U |- of (M x) (T x)} -> {G, wf x, of x V |- of (M x) (T x)}.
 intros.
 apply eq_ctx' to H2 H3 _ _ _ H4 H5. search.
 
