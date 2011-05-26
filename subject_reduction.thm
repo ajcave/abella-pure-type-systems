@@ -1,3 +1,7 @@
+/* Subject reduction for pure type systems
+ * Henk Barendregt, "Lambda Calculi with Types", 1992
+ *
+ * Abella proof contributed by Andrew Cave */
 Specification "cr_typing".
 Import "typing_inversion".
 Import "eq_typing".
