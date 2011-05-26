@@ -4,11 +4,6 @@ Import "wf_contexts".
 Import "typing_contexts".
 
 Close sort.
-Define ctx_or : olist -> prop by
- ctx_or nil;
- nabla x, ctx_or (wf x::G) := ctx_or G;
- nabla x, ctx_or (of x T::wf x::G) := ctx_or G.
-
 Define ctx_or_wf_rel : olist -> olist -> prop by
  ctx_or_wf_rel nil nil;
  nabla x, ctx_or_wf_rel (wf x::G) (wf x::D) := ctx_or_wf_rel G D;
