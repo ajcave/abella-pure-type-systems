@@ -1,28 +1,5 @@
 Specification "pts".
-Import "contexts".
-
-Theorem wf_str : forall G T N, nabla x, {G,wf x, of x T |- wf (N x)} -> {G,wf x |- wf (N x)}.
-induction on 1. intros. case H1. case H2. case H3. search.
-search. search. apply IH to H2. apply IH to H3. search.
-apply IH to H2. apply IH to H3. search. apply IH to H2. apply IH to H3. search.
-
-Theorem of_wf_l : forall G M T, ctx G -> {G |- of M T} -> {G |- wf M}.
-induction on 2. intros. case H2. apply mem_of_wf to _ H3. search.
-search. apply IH to _ H4. apply IH to _ H5. apply wf_str to H7. search.
-apply IH to _ H4. apply IH to _ H5. apply IH to _ H6. apply wf_str to H8. apply wf_str to H9.
-search.
-apply IH to _ H4. apply IH to _ H3. search. apply IH to _ H4. apply IH to _ H5. search.
-
-Theorem of_wf : forall G M T, ctx G -> {G |- of M T} -> {G |- wf T}.
-induction on 2. intros. case H2. apply kinds' to _ H3.
-apply of_wf_l to _ H4. search.
-search.
-search.
-apply of_wf_l to _ H4. apply of_wf_l to _ H5. apply wf_str to H8. search.
-apply IH to _ H3. case H5. apply member_of_name to _ H6. case H7.
-apply of_wf_l to _ H4. inst H7 with n1 = N.
-cut H9. search.
-apply of_wf_l to _ H4. search.
+Import "typing_contexts".
 
 Theorem inv_for' : forall G U T S, ctx G -> {G |- of (for U T) S} -> exists S1 S2 S3, {G |- rule S1 S2 S3} /\
   (S = (st S3) \/ ({G |- eq S (st S3)} /\ exists S', {G |- of S (st S')})) /\ {G |- of U (st S1)} /\ nabla x, {G,wf x,of x U |- of (T x) (st S2)}.
@@ -31,7 +8,7 @@ apply member_of_name to _ H3. case H4.
 exists S1. exists S2. exists S3. search.
 apply IH to _ H5.
 case H7.
-search. % TODO: !!!! Report that naming bug
+search.
 apply of_wf to _ H5.
 search.
 
@@ -44,7 +21,7 @@ case H4. search. search.
 Theorem inv_for_t : forall G M U T, ctx G -> {G |- of M (for U T)} -> exists S, {G |- of (for U T) S}.
 induction on 2. intros. case H2.
 apply member_of_name to _ H3. case H4.
-apply kinds' to _ H3.
+apply kinds to _ H3.
 search.
 search.
 apply IH to _ H4.

@@ -38,6 +38,11 @@ Theorem mem_pr_cd : forall G D M M', pr_cd_ctx G D -> member (pr M M') G -> memb
 induction on 2. intros. case H2. case H1. search.
 case H1. apply IH to _ H3. search. 
 
+Theorem prn_concat : forall G M N L, pr_ctx G -> {G |- prn M N} -> {G |- prn N L} -> {G |- prn M L}.
+induction on 3. intros. case H3. apply mem_pr1 to _ H4. case H5.
+search.
+apply IH to _ H2 H4. search.
+
 Close sort.
 Theorem pr_subst : forall G M M' N N', nabla x, pr_ctx G -> {G,pr x x |- pr (M x) (M' x)} -> {G |- pr N N'}
 -> {G |- pr (M N) (M' N')}.
@@ -105,40 +110,6 @@ search.
 apply IH to _ H3. apply IH to _ H4. search.
 search.
 
-Define wf_pr_ctx : olist -> olist -> prop by
- wf_pr_ctx nil nil;
- nabla x, wf_pr_ctx (wf x::W) (pr x x::G) := wf_pr_ctx W G.
-
-Theorem mem_wf : forall W G M, wf_pr_ctx W G -> member M W -> is_wf M.
-induction on 2. intros. case H2. case H1. search. case H1. apply IH to _ H3. search.
-
-Theorem mem_wf_pr : forall W G M, wf_pr_ctx W G -> member (wf M) W -> member (pr M M) G.
-induction on 2. intros. case H2. case H1. search. case H1. apply IH to _ H3. search.
-
-Theorem mem_pr_wf : forall W G M, wf_pr_ctx W G -> member (pr M M) G -> member (wf M) W.
-induction on 2. intros. case H2. case H1. search. case H1. apply IH to _ H3. search.
-
-Theorem pr_refl : forall W G M, wf_pr_ctx W G -> {W |- wf M} -> {G |- pr M M}.
-induction on 2. intros. case H2. apply mem_wf_pr to _ H3. search.
-search. apply IH to _ H3. apply IH to _ H4. search.
-apply IH to _ H3. apply IH to _ H4. search.
-apply IH to _ H3. apply IH to _ H4. search.
-
-Theorem pr_includes_step : forall W G M N, wf_pr_ctx W G -> {W |- wf M} -> {W |- step M N} -> {G |- pr M N}.
-induction on 3. intros. case H3.
-apply mem_wf to _ H4. case H5.
-case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4.
-apply pr_refl to _ H6. search.
-case H2. apply mem_wf to _ H5. case H6.
-apply IH to _ H6 H4. apply pr_refl to _ H5. search.
-case H2. apply mem_wf to _ H5. case H6.
-apply IH to _ _ H4. apply pr_refl to _ H6. search.
-case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4. apply pr_refl to _ H5. search.
-case H2. apply mem_wf to _ H7. case H8. case H7. apply mem_wf to _ H9. case H10.
-apply pr_refl to _ H8. apply pr_refl to _ H10. apply pr_refl to _ H9. search.
-case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4. apply pr_refl to _ H6. search.
-case H2. apply mem_wf to _ H5. case H6. apply IH to _ H6 H4. apply pr_refl to _ H5. search.
-
 Theorem pr_implies_pr_cd : forall G, pr_ctx G -> exists D, pr_cd_ctx G D.
 induction on 1. intros. case H1. search.
 apply IH to H2. search.
@@ -168,7 +139,3 @@ apply IH to _ H4 H3.
 apply church_rosser_strip to _ H5 H6.
 search.
 
-Theorem prn_concat : forall G M N L, pr_ctx G -> {G |- prn M N} -> {G |- prn N L} -> {G |- prn M L}.
-induction on 3. intros. case H3. apply mem_pr1 to _ H4. case H5.
-search.
-apply IH to _ H2 H4. search.

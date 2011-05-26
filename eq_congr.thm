@@ -1,49 +1,49 @@
 Specification "pts".
 Import "wf_contexts".
 
-Theorem eq_for_congr_l : forall G U V T, nabla x, ctx_wf G -> {G |- eq U V} -> {G,wf x |- wf (T x)} -> {G |- eq (for U T) (for V T)}.
+Theorem eq_for_congr_l : forall G U V T, nabla x, wf_ctx G -> {G |- eq U V} -> {G,wf x |- wf (T x)} -> {G |- eq (for U T) (for V T)}.
 induction on 2. intros. case H2. apply member_wf to _ H4. case H5.
 search. search. apply IH to _ H4 _ with T = T. search.
 apply IH to _ H4 _ with T = T. apply IH to _ H6 _ with T = T. search.
 
-Theorem eq_for_congr_r : forall G U T1 T2, nabla x, ctx_wf G -> {G |- wf U} -> {G,wf x |- eq (T1 x) (T2 x)} -> {G |- eq (for U T1) (for U T2)}.
+Theorem eq_for_congr_r : forall G U T1 T2, nabla x, wf_ctx G -> {G |- wf U} -> {G,wf x |- eq (T1 x) (T2 x)} -> {G |- eq (for U T1) (for U T2)}.
 induction on 3. intros. case H3. apply member_wf to _ H4. case H5. search. search.
 apply IH to _ _ H4 with U = U. search.
 apply IH to _ _ H4 with U = U. apply IH to _ _ H6 with U = U. search.
 
-Theorem eq_for_congr : forall G U V T1 T2, nabla x, ctx_wf G -> {G |- wf U} -> {G,wf x |- wf (T2 x)} -> {G |- eq U V} -> {G,wf x |- eq (T1 x) (T2 x)} -> {G |- eq (for U T1) (for V T2)}.
+Theorem eq_for_congr : forall G U V T1 T2, nabla x, wf_ctx G -> {G |- wf U} -> {G,wf x |- wf (T2 x)} -> {G |- eq U V} -> {G,wf x |- eq (T1 x) (T2 x)} -> {G |- eq (for U T1) (for V T2)}.
 intros. apply eq_for_congr_r to _ H2 H5.
 apply eq_for_congr_l to _ H4 H3. search.
 
-Theorem eq_abs_congr_l : forall G U V T, nabla x, ctx_wf G -> {G |- eq U V} -> {G,wf x |- wf (T x)} -> {G |- eq (abs U T) (abs V T)}.
+Theorem eq_abs_congr_l : forall G U V T, nabla x, wf_ctx G -> {G |- eq U V} -> {G,wf x |- wf (T x)} -> {G |- eq (abs U T) (abs V T)}.
 induction on 2. intros. case H2. apply member_wf to _ H4. case H5.
 search. search. apply IH to _ H4 H3. search.
 apply IH to _ H4 H3. apply IH to _ H6 H3. search.
 
-Theorem eq_abs_congr_r : forall G U T1 T2, nabla x, ctx_wf G -> {G,wf x |- eq (T1 x) (T2 x)} -> {G |- wf U} -> {G |- eq (abs U T1) (abs U T2)}.
+Theorem eq_abs_congr_r : forall G U T1 T2, nabla x, wf_ctx G -> {G,wf x |- eq (T1 x) (T2 x)} -> {G |- wf U} -> {G |- eq (abs U T1) (abs U T2)}.
 induction on 2. intros. case H2. apply member_wf to _ H4. case H5. search. search.
 apply IH to _ H4 H3. search.
 apply IH to _ H4 H3. apply IH to _ H6 H3. search.
 
-Theorem eq_abs_congr : forall G U V T1 T2, nabla x, ctx_wf G -> {G |- wf U} -> {G,wf x |- wf (T2 x)} -> {G |- eq U V} -> {G,wf x |- eq (T1 x) (T2 x)} -> {G |- eq (abs U T1) (abs V T2)}.
+Theorem eq_abs_congr : forall G U V T1 T2, nabla x, wf_ctx G -> {G |- wf U} -> {G,wf x |- wf (T2 x)} -> {G |- eq U V} -> {G,wf x |- eq (T1 x) (T2 x)} -> {G |- eq (abs U T1) (abs V T2)}.
 intros. apply eq_abs_congr_r to _ H5 H2.
 apply eq_abs_congr_l to _ H4 H3. search.
 
-Theorem eq_app_congr_l : forall G U V T, ctx_wf G -> {G |- eq U V} -> {G |- wf T} -> {G |- eq (app U T) (app V T)}.
+Theorem eq_app_congr_l : forall G U V T, wf_ctx G -> {G |- eq U V} -> {G |- wf T} -> {G |- eq (app U T) (app V T)}.
 induction on 2. intros. case H2. apply member_wf to _ H4. case H5. search. search.
 apply IH to _ H4 _ with T = T. search.
 apply IH to _ H4 _ with T = T. apply IH to _ H6 _ with T = T. search.
 
-Theorem eq_app_congr_r : forall G U V T, ctx_wf G -> {G |- eq U V} -> {G |- wf T} -> {G |- eq (app T U) (app T V)}.
+Theorem eq_app_congr_r : forall G U V T, wf_ctx G -> {G |- eq U V} -> {G |- wf T} -> {G |- eq (app T U) (app T V)}.
 induction on 2. intros. case H2. apply member_wf to _ H4. case H5. search. search.
 apply IH to _ H4 _ with T = T. search.
 apply IH to _ H4 _ with T = T. apply IH to _ H6 _ with T = T. search.
 
-Theorem eq_app_congr : forall G U V T1 T2, ctx_wf G -> {G |- wf U} -> {G |- wf T2} -> {G |- eq U V} -> {G |- eq T1 T2} -> {G |- eq (app U T1) (app V T2)}.
+Theorem eq_app_congr : forall G U V T1 T2, wf_ctx G -> {G |- wf U} -> {G |- wf T2} -> {G |- eq U V} -> {G |- eq T1 T2} -> {G |- eq (app U T1) (app V T2)}.
 intros. apply eq_app_congr_r to _ H5 H2. apply eq_app_congr_l to _ H4 H3. search.
 
 Close sort.
-Theorem eq_subst : forall G T M N, nabla x, ctx_wf G -> {G |- wf M} -> {G |- wf N} -> {G |- eq M N} -> {G,wf x |- wf (T x)} -> {G |- eq (T M) (T N)}.
+Theorem eq_subst : forall G T M N, nabla x, wf_ctx G -> {G |- wf M} -> {G |- wf N} -> {G |- eq M N} -> {G,wf x |- wf (T x)} -> {G |- eq (T M) (T N)}.
 induction on 5. intros. case H5. apply member_wf to _ H6. case H7. search. search. search.
 apply IH to _ _ _ H4 H6. apply IH to _ _ _ H4 H7 with x = n1.
 inst H6 with n1 = M. cut H10. inst H7 with n1 = N. cut H12.

@@ -1,8 +1,53 @@
 Specification "pts".
+Import "wf_contexts".
 Import "cr".
 Import "eq_congr".
 
-Theorem cr_eq : forall W G D M N, pwctx W G D -> {W |- wf M} -> {W |- wf N} -> {W |- eq M N} -> exists L, {G |- prn M L} /\ {G |- prn N L}.
+Define wf_pr_ctx : olist -> olist -> prop by
+ wf_pr_ctx nil nil;
+ nabla x, wf_pr_ctx (wf x::W) (pr x x::G) := wf_pr_ctx W G.
+
+Theorem wf_pr_implies_pr : forall W G, wf_pr_ctx W G -> pr_ctx G.
+induction on 1. intros. case H1. search. unfold. backchain IH.
+
+Theorem wf_pr_implies_wf : forall W G, wf_pr_ctx W G -> wf_ctx W.
+induction on 1. intros. case H1. search. apply IH to H2. search.
+
+Theorem exists_wf_pr_ctx : forall W, wf_ctx W -> exists G, wf_pr_ctx W G.
+induction on 1. intros. case H1. search.
+apply IH to H2. search.
+
+Theorem mem_wf : forall W G M, wf_pr_ctx W G -> member M W -> is_wf M.
+induction on 2. intros. case H2. case H1. search. case H1. apply IH to _ H3. search.
+
+Theorem mem_wf_pr : forall W G M, wf_pr_ctx W G -> member (wf M) W -> member (pr M M) G.
+induction on 2. intros. case H2. case H1. search. case H1. apply IH to _ H3. search.
+
+Theorem mem_pr_wf : forall W G M, wf_pr_ctx W G -> member (pr M M) G -> member (wf M) W.
+induction on 2. intros. case H2. case H1. search. case H1. apply IH to _ H3. search.
+
+Theorem pr_refl : forall W G M, wf_pr_ctx W G -> {W |- wf M} -> {G |- pr M M}.
+induction on 2. intros. case H2. apply mem_wf_pr to _ H3. search.
+search. apply IH to _ H3. apply IH to _ H4. search.
+apply IH to _ H3. apply IH to _ H4. search.
+apply IH to _ H3. apply IH to _ H4. search.
+
+Theorem pr_includes_step : forall W G M N, wf_pr_ctx W G -> {W |- wf M} -> {W |- step M N} -> {G |- pr M N}.
+induction on 3. intros. case H3.
+apply mem_wf to _ H4. case H5.
+case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4.
+apply pr_refl to _ H6. search.
+case H2. apply mem_wf to _ H5. case H6.
+apply IH to _ H6 H4. apply pr_refl to _ H5. search.
+case H2. apply mem_wf to _ H5. case H6.
+apply IH to _ _ H4. apply pr_refl to _ H6. search.
+case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4. apply pr_refl to _ H5. search.
+case H2. apply mem_wf to _ H7. case H8. case H7. apply mem_wf to _ H9. case H10.
+apply pr_refl to _ H8. apply pr_refl to _ H10. apply pr_refl to _ H9. search.
+case H2. apply mem_wf to _ H5. case H6. apply IH to _ _ H4. apply pr_refl to _ H6. search.
+case H2. apply mem_wf to _ H5. case H6. apply IH to _ H6 H4. apply pr_refl to _ H5. search.
+
+Theorem cr_eq : forall W G M N, wf_pr_ctx W G -> {W |- wf M} -> {W |- wf N} -> {W |- eq M N} -> exists L, {G |- prn M L} /\ {G |- prn N L}.
 induction on 4. intros. case H4.
 apply mem_wf to _ H5. case H6.
 apply pr_includes_step to _ _ H5. search.
@@ -10,27 +55,27 @@ search.
 apply IH to _ _ _ H5. search.
 apply IH to _ _ _ H5.
 apply IH to _ _ _ H7.
-apply pw_implies_p to H1.
-apply cr2 to _ H9 H10.
+apply wf_pr_implies_pr to H1.
+apply church_rosser_diamond to _ H9 H10.
 apply prn_concat to _ H8 H13.
 apply prn_concat to _ H11 H14.
 search.
 
-Theorem prn_for_preserve : forall G D U T M, pctx G D -> {G |- prn (for U T) M} -> exists V T', M = for V T'.
-induction on 2. intros. case H2. apply mem_pr to _ H3. case H4.
+Theorem prn_for_preserve : forall G U T M, pr_ctx G -> {G |- prn (for U T) M} -> exists V T', M = for V T'.
+induction on 2. intros. case H2. apply mem_pr1 to _ H3. case H4.
 search.
 apply IH to _ H3.
-case H4. apply mem_pr to _ H5. case H6. search.
+case H4. apply mem_pr1 to _ H5. case H6. search.
 
-Theorem prn_for_inv : forall G D U V T1 T2, pctx G D -> {G |- prn (for U T1) (for V T2)} -> {G |- prn U V} /\ nabla x, {G,pr x x |- prn (T1 x) (T2 x)}.
-induction on 2. intros. case H2. apply mem_pr to _ H3. case H4.
+Theorem prn_for_inv : forall G U V T1 T2, pr_ctx G -> {G |- prn (for U T1) (for V T2)} -> {G |- prn U V} /\ nabla x, {G,pr x x |- prn (T1 x) (T2 x)}.
+induction on 2. intros. case H2. apply mem_pr1 to _ H3. case H4.
 search.
 apply prn_for_preserve to _ H3.
 apply IH to _ H3.
-case H4. apply mem_pr to _ H7. case H8. search.
+case H4. apply mem_pr1 to _ H7. case H8. search.
 
-Theorem pr_implies_wf : forall W G D M N, pwctx W G D -> {G |- pr M N} -> {W |- wf N}.
-induction on 2. intros. apply pw_implies_p to H1. case H2. apply mem_pr to _ H4. case H5.
+Theorem pr_implies_wf : forall W G M N, wf_pr_ctx W G -> {G |- pr M N} -> {W |- wf N}.
+induction on 2. intros. apply wf_pr_implies_pr to H1. case H2. apply mem_pr1 to _ H4. case H5.
 apply mem_pr_wf to _ H4. search.
 apply IH to _ H4. apply IH to _ H5. search.
 apply IH to _ H4. apply IH to _ H5. search.
@@ -39,11 +84,8 @@ apply IH to _ H4. apply IH to _ H5.
 inst H7 with n1 = N'. cut H8. search.
 search.
 
-Theorem pwctx_implies_ctx_wf : forall W G D, pwctx W G D -> ctx_wf W.
-induction on 1. intros. case H1. search. apply IH to H2. search.
-
-Theorem eq_includes_pr : forall W G D M N, pwctx W G D -> {W |- wf M} -> {G |- pr M N} -> {W |- eq M N}.
-induction on 3. intros. apply pw_implies_p to H1. apply pwctx_implies_ctx_wf to H1. case H3. apply mem_pr to _ H6. case H7. search.
+Theorem eq_includes_pr : forall W G M N, wf_pr_ctx W G -> {W |- wf M} -> {G |- pr M N} -> {W |- eq M N}.
+induction on 3. intros. apply wf_pr_implies_pr to H1. apply wf_pr_implies_wf to H1. case H3. apply mem_pr1 to _ H6. case H7. search.
 case H2. apply mem_wf to _ H8. case H9.
 apply IH to _ _ H6. apply IH to _ H9 H7.
 apply pr_implies_wf to _ H7.
@@ -68,27 +110,23 @@ inst H11 with n1 = N1. cut H20.
 search.
 search.
 
-Theorem prn_implies_wf : forall W G D M N, pwctx W G D -> {G |- prn M N} -> {W |- wf N} \/ M = N.
-induction on 2. intros. apply pw_implies_p to H1. case H2. apply mem_pr to _ H4. case H5.
+Theorem prn_implies_wf : forall W G M N, wf_pr_ctx W G -> {G |- prn M N} -> {W |- wf N} \/ M = N.
+induction on 2. intros. apply wf_pr_implies_pr to H1. case H2. apply mem_pr1 to _ H4. case H5.
 search.
 left. apply IH to _ H4. case H6. apply pr_implies_wf to _ H5. search.
 apply pr_implies_wf to _ H5. search.
 
-Theorem eq_includes_prn : forall G D W M N, pwctx W G D -> {W |- wf M} -> {G |- prn M N} -> {W |- eq M N}.
-induction on 3. intros. case H3. apply pw_implies_p to H1. apply mem_pr to _ H4. case H6. search.
+Theorem eq_includes_prn : forall G W M N, wf_pr_ctx W G -> {W |- wf M} -> {G |- prn M N} -> {W |- eq M N}.
+induction on 3. intros. case H3. apply wf_pr_implies_pr to H1. apply mem_pr1 to _ H4. case H6. search.
 apply IH to _ _ H4.
 apply prn_implies_wf to _ H4. case H7.
 apply eq_includes_pr to _ _ H5. search.
 apply eq_includes_pr to _ _ H5. search.
 
-Theorem exists_pwctx : forall W, ctx_wf W -> exists G D, pwctx W G D.
-induction on 1. intros. case H1. search.
-apply IH to H2. search.
-
-Theorem eq_for_inv : forall W U V T1 T2, ctx_wf W -> {W |- wf (for U T1)} -> {W |- wf (for V T2)} -> {W |- eq (for U T1) (for V T2)} -> {W |- eq U V} /\ nabla x, {W, wf x |- eq (T1 x) (T2 x)}.
-intros. apply exists_pwctx to H1.
+Theorem eq_for_inv : forall W U V T1 T2, wf_ctx W -> {W |- wf (for U T1)} -> {W |- wf (for V T2)} -> {W |- eq (for U T1) (for V T2)} -> {W |- eq U V} /\ nabla x, {W, wf x |- eq (T1 x) (T2 x)}.
+intros. apply exists_wf_pr_ctx to H1.
 apply cr_eq to _ _ _ H4.
-apply pw_implies_p to H5.
+apply wf_pr_implies_pr to H5.
 apply prn_for_preserve to _ H6.
 apply prn_for_inv to _ H6.
 apply prn_for_inv to _ H7.

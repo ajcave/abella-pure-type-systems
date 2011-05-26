@@ -1,8 +1,8 @@
 Specification "pts".
-Import "contexts".
 Import "inversion".
-Import "eq".
-Import "cr".
+Import "eq_typing".
+Import "eq_congr".
+Import "cr_eq".
 
 Theorem subj_red : forall G M M' T, ctx G -> {G |- of M T} -> {G |- step M M'} -> {G |- of M' T}.
 induction on 3. intros.
