@@ -1,0 +1,42 @@
+Specification "pts".
+
+Define append : olist -> olist -> olist -> prop by
+ append nil Ys Ys;
+ append (X::Xs) Ys (X::Zs) := append Xs Ys Zs.
+
+Theorem append_member : forall L M N E, append L M N -> member E N -> member E L \/ member E M.
+induction on 1. intros. case H1. search.
+case H2. search.
+apply IH to H3 H4. case H5. search. search.
+
+Theorem append_member_l : forall L M N E, append L M N -> member E L -> member E N.
+induction on 1. intros. case H1. case H2.
+case H2. search. apply IH to H3 H4. search.
+
+Theorem append_member_r : forall L M N E, append L M N -> member E M -> member E N.
+induction on 1. intros. case H1. search.
+apply IH to H3 H2. search.
+
+Theorem weaken_several_l : forall G D H E, append G D H -> {G |- E} -> {H |- E}. 
+intros.
+monotone H2 with H.
+intros.
+apply append_member_l to H1 H3.
+search.
+search.
+
+Theorem weaken_several_r : forall G D H E, append G D H -> {D |- E} -> {H |- E}.
+intros.
+monotone H2 with H.
+intros.
+apply append_member_r to H1 H3.
+search.
+search.
+
+/* Sad that this can't be polymorphic. It's the only reason I import
+ the specification. */
+Theorem member_prune : forall G E, nabla (n:tm),
+ member (E n) G -> (exists E', E = x\E').
+induction on 1. intros. case H1. search.
+apply IH to H2. search.
+

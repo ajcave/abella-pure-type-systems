@@ -1,0 +1,133 @@
+Specification "pts".
+Import "lib".
+Import "wf_contexts".
+Import "typing_contexts".
+
+Close sort.
+Define ctx_or : olist -> prop by
+ ctx_or nil;
+ nabla x, ctx_or (wf x::G) := ctx_or G;
+ nabla x, ctx_or (of x T::wf x::G) := ctx_or G.
+
+Define ctx_or_wf_rel : olist -> olist -> prop by
+ ctx_or_wf_rel nil nil;
+ nabla x, ctx_or_wf_rel (wf x::G) (wf x::D) := ctx_or_wf_rel G D;
+ nabla x, ctx_or_wf_rel (of x T::wf x::G) (wf x::D) := ctx_or_wf_rel G D.
+
+Theorem ctx_or_wf_rel_subset : forall G D M, ctx_or_wf_rel G D -> is_wf M -> member M G -> member M D.
+induction on 3. intros. case H3. case H1. search. case H2.
+case H1. apply IH to _ _ H4. search.
+apply IH to _ _ H4. search.
+
+Theorem ctx_or_wf_rel_subset2 : forall G D M, ctx_or_wf_rel G D -> member M D -> member M G.
+induction on 2. intros. case H2. case H1. search. search.
+case H1. apply IH to _ H3. search. apply IH to _ H3. search.
+
+Theorem member_or_wf_rel_G : forall G D M, ctx_or_wf_rel G D -> member M G -> is_of M.
+induction on 2. intros. case H2. case H1. search. search.
+case H1. apply IH to _ H3. search.
+apply IH to _ H3. search.
+
+Theorem member_of_wf_rel_D : forall G D M, ctx_or_wf_rel G D -> member M D -> is_wf M.
+induction on 2. intros. case H2. case H1. search. search.
+case H1. apply IH to _ H3. search. apply IH to _ H3. search.
+
+Theorem wf_doesnt_depend_on_of : forall G D M,
+ctx_or_wf_rel G D -> {G |- wf M} -> {D |- wf M}.
+induction on 2. intros. case H2. apply member_or_wf_rel_G to _ H3. case H4.
+apply ctx_or_wf_rel_subset to _ _ H3. search.
+search.
+apply IH to _ H3. apply IH to _ H4. search.
+apply IH to _ H3. apply IH to _ H4. search.
+apply IH to _ H3. apply IH to _ H4. search.
+
+Theorem step_doesnt_depend_on_of : forall G D M N,
+ctx_or_wf_rel G D -> {G |- step M N} -> {D |- step M N}.
+induction on 2. intros. case H2. apply member_or_wf_rel_G to _ H3. case H4.
+apply IH to _ H3. search.
+apply IH to _ H3. search.
+apply IH to _ H3. search.
+apply IH to _ H3. search.
+apply wf_doesnt_depend_on_of to _ H3.
+apply wf_doesnt_depend_on_of to _ H4.
+apply wf_doesnt_depend_on_of to _ H5.
+search.
+apply IH to _ H3. search.
+apply IH to _ H3. search.
+
+Theorem eq_doesnt_depend_on_of : forall G D M N,
+ctx_or_wf_rel G D -> {G |- eq M N} -> {D |- eq M N}.
+induction on 2. intros. case H2. apply member_or_wf_rel_G to _ H3. case H4.
+apply step_doesnt_depend_on_of to _ H3. search.
+search.
+apply IH to _ H3. search.
+apply IH to _ H3. apply IH to _ H5.
+apply wf_doesnt_depend_on_of to _ H4.
+search.
+
+Theorem ctx_to_ctx_or_wf_rel : forall G, ctx G -> exists D, ctx_or_wf_rel G D.
+induction on 1. intros. case H1. search.
+apply IH to H2. search.
+
+Theorem ctx_or_wf_rel_D_is_wf : forall G D, ctx_or_wf_rel G D -> ctx_wf D.
+induction on 1. intros. case H1. search. apply IH to H2. search.
+apply IH to H2. search.
+
+Theorem eq_ctx' : forall G U V K G' G'' D M T, nabla x,
+{G |- of U (st K)} -> {G |- of V (st K)} ->
+append (G' x) (of x U::wf x::G) (G'' x) ->
+append (G' x) (of x V::wf x::G) (D x) ->
+ctx (G'' x) -> {G |- eq U V} ->
+{G'' x |- of (M x) (T x)} ->
+{D x |- of (M x) (T x)}.
+induction on 7. intros. case H7.
+apply member_of_name to _ H8. case H9.
+apply append_member to H3 H8. case H10.
+apply append_member_l to H4 H11. search.
+case H11. case H12.
+assert (member (of n2 (T2 n1)) (of n1 (V n2)::wf n1::G n2)).
+apply append_member_r to H4 H14. search.
+apply append_member to H3 H8. case H10.
+apply append_member_l to H4 H11. search.
+case H11.
+assert (member (of n1 V) (of n1 V::wf n1::G)).
+apply append_member_r to H4 H12.
+assert {D n1 |- of n1 V}.
+assert {G,wf n1,of n1 V |- of U (st K)}.
+apply weaken_several_r to H4 H15.
+assert {G,wf n1,of n1 V |- eq U V}.
+apply weaken_several_r to H4 H17.
+search.
+case H12. apply member_prune to H13.
+apply axiom_strengthen to _ H8 with D = D n1. search.
+
+apply rule_strengthen to _ H8 with D = D n1.
+apply IH to _ _ _ _ _ H6 H10 with G' = x\ of n2 (U1 x)::wf n2::(G' x).
+apply IH to _ _ _ _ _ H6 H9.
+search.
+apply rule_strengthen to _ H8 with D = D n1.
+apply IH to _ _ _ _ _ H6 H10 with G' = x\ of n2 (U1 x)::wf n2::(G' x).
+apply IH to _ _ _ _ _ H6 H11 with G' = x\ of n2 (U1 x)::wf n2::(G' x).
+apply IH to _ _ _ _ _ H6 H9.
+search.
+apply IH to _ _ _ _ _ H6 H8.
+apply IH to _ _ _ _ _ H6 H9.
+search.
+apply IH to _ _ _ _ _ H6 H9.
+apply IH to _ _ _ _ _ H6 H10.
+apply ctx_to_ctx_or_wf_rel to H5.
+apply eq_doesnt_depend_on_of to _ H8.
+monotone H14 with (D n1).
+intros.
+apply ctx_or_wf_rel_subset2 to _ H15.
+apply append_member to _ H16. case H17.
+apply append_member_l to H4 H18. search.
+apply member_of_wf_rel_D to _ H15.
+case H18. case H19.
+assert (member (X n1) (of n1 V::wf n1::G)).
+apply append_member_r to H4 H21. search.
+search.
+
+Theorem eq_ctx : forall G U V K M T, nabla x, ctx G -> {G |- of U (st K)} -> {G |- of V (st K)} -> {G |- eq U V} -> {G, wf x, of x U |- of (M x) (T x)} -> {G, wf x, of x V |- of (M x) (T x)}.
+intros.
+apply eq_ctx' to H2 H3 _ _ _ H4 H5. search.
