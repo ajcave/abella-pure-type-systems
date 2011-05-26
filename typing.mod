@@ -16,7 +16,8 @@ of (for U T) (st S3) :-
  pi x\ (wf x => of x U => of (T x) (st S2)). 
 
 of (abs U M) (for U T) :-
- rule S1 S2 S3, of U (st S1),
+ rule S1 S2 S3,
+ of U (st S1),
  pi x\ (wf x => of x U => of (T x) (st S2)),
  pi x\ (wf x => of x U => of (M x) (T x)).
 
