@@ -15,34 +15,42 @@ Define pr_cd_ctx : olist -> olist -> prop by
  nabla x, pr_cd_ctx (pr x x::G) (cd x x::notlam x::D) := pr_cd_ctx G D.
 Define is_pr : o -> prop by
  nabla x, is_pr (pr x x).
-Define is_cd : o -> prop by
- nabla x, is_cd (cd x x).
-Define is_notlam : o -> prop by
- nabla x, is_notlam (notlam x).
+
+Define name' : tm -> prop by
+ nabla x, name' x.
+
+Define mem_pr_cd_G : o -> olist -> olist -> prop by
+ mem_pr_cd_G (pr X X) G D := name' X /\ member (cd X X) D /\ member (notlam X) D.
+
+Define mem_pr_cd_D : o -> olist -> olist -> prop by
+ mem_pr_cd_D (cd X X) G D := name' X /\ member (pr X X) G /\ member (notlam X) D;
+ mem_pr_cd_D (notlam X) G D := name' X /\ member (pr X X) G /\ member (cd X X) D.
+
+Theorem mems_pr_cd_G : forall G D E, pr_cd_ctx G D -> member E G -> mem_pr_cd_G E G D.
+induction on 1. intros. case H1. case H2.
+case H2. search.
+apply IH to H3 H4.
+case H5. search.
+
+Theorem mems_pr_cd_D : forall G D E, pr_cd_ctx G D -> member E D -> mem_pr_cd_D E G D.
+induction on 1. intros. case H1. case H2.
+case H2. search.
+case H4. search.
+apply IH to H3 H5.
+case H6. search.
+search.
 
 Theorem pr_cd_implies_pr : forall G D, pr_cd_ctx G D -> pr_ctx G.
 induction on 1. intros. case H1. search.
 apply IH to H2. search.
 
-Theorem mem_cd : forall G D M M', pr_cd_ctx G D -> member (cd M M') D -> is_cd (cd M M') /\ member (notlam M) D.
-induction on 2. intros. case H2. case H1. search.
-case H1. case H3. apply IH to _ H5. case H6. search. search.
-
-Theorem mem_notlam : forall G D P, pr_cd_ctx G D -> member (notlam P) D -> is_notlam (notlam P).
-induction on 2. intros. case H2. case H1. case H1. case H3. search.
-apply IH to _ H5. search.
-
-Theorem mem_pr : forall G D E, pr_cd_ctx G D -> member E G -> is_pr E.
-induction on 2. intros. case H2. case H1. search.
-case H1. apply IH to _ H3. search.
+Theorem pr_implies_pr_cd : forall G, pr_ctx G -> exists D, pr_cd_ctx G D.
+induction on 1. intros. case H1. search.
+apply IH to H2. search.
 
 Theorem mem_pr1 : forall G E, pr_ctx G -> member E G -> is_pr E.
 induction on 2. intros. case H2. case H1. search.
 case H1. apply IH to _ H3. search.
-
-Theorem mem_pr_cd : forall G D M M', pr_cd_ctx G D -> member (pr M M') G -> member (cd M M') D /\ member (notlam M) D.
-induction on 2. intros. case H2. case H1. search.
-case H1. apply IH to _ H3. search. 
 
 Theorem prn_concat : forall G M N L, pr_ctx G -> {G |- prn M N} -> {G |- prn N L} -> {G |- prn M L}.
 induction on 3. intros. case H3. apply mem_pr1 to _ H4. case H5.
@@ -70,25 +78,25 @@ search.
 search.
 
 Theorem pr_cd_triangle : forall G D M M' N, pr_cd_ctx G D -> {G |- pr M N} -> {D |- cd M M'} -> {G |- pr N M'}.
-induction on 3. intros. case H3.
-apply mem_cd to _ H4. case H5.
-case H2. apply mem_pr to _ H7. case H8.
+induction on 3. intros.
+case H3. apply mems_pr_cd_D to _ H4. case H5. case H6.
+case H2. apply mems_pr_cd_G to _ H9. case H10. case H11.
 search.
-case H2. apply mem_pr to _ H6. case H7.
+case H2. apply mems_pr_cd_G to _ H6. case H7. case H8.
 apply IH to _ H6 H4.
 apply IH to _ H7 H5.
 search.
-case H2. apply mem_pr to _ H6. case H7.
+case H2. apply mems_pr_cd_G to _ H6. case H7. case H8.
 apply IH to _ H6 H4.
 apply IH to _ H7 H5.
 search.
-case H2. apply mem_pr to _ H7. case H8.
+case H2. apply mems_pr_cd_G to _ H7. case H8. case H9.
 apply IH to _ H7 H5.
 apply IH to _ H8 H6.
 search.
-case H4. apply mem_notlam to _ H9. case H10.
-case H2. apply mem_pr to _ H6. case H7.
-case H6. apply mem_pr to _ H8. case H9.
+case H4. apply mems_pr_cd_D to _ H9. case H10. case H11.
+case H2. apply mems_pr_cd_G to _ H6. case H7. case H8.
+case H6. apply mems_pr_cd_G to _ H8. case H9. case H10.
 apply IH to _ H7 H4.
 apply IH to _ H9 H5.
 search.
@@ -97,28 +105,27 @@ apply IH to _ H7 H5.
 apply pr_cd_implies_pr to H1.
 apply pr_subst to _ H9 H8.
 search.
-case H2. apply mem_pr to _ H4. case H5.
+case H2. apply mems_pr_cd_G to _ H4. case H5. case H6.
 search.
 
 Theorem is_lam_decide : forall G D M M', pr_cd_ctx G D -> {G |- pr M M'} -> {D |- notlam M} \/ exists U N, M = abs U N.
-intros. case H2. apply mem_pr_cd to _ H3. search.
-search. search. search. search. search. 
+intros.
+case H2. apply mems_pr_cd_G to _ H3. case H4. case H5.
+search. search. search. search. search. search. 
 
 Theorem cd_total : forall G D M M', pr_cd_ctx G D -> {G |- pr M M'} -> exists N, {D |- cd M N}.
-induction on 2. intros. case H2. apply mem_pr to _ H3. case H4. apply mem_pr_cd to _ H3.
+induction on 2. intros.
+case H2. apply mems_pr_cd_G to _ H3. case H4. case H5.
 search.
 apply IH to _ H3. apply IH to _ H4. search.
 apply IH to _ H3. apply IH to _ H4. search.
 apply IH to _ H3. apply IH to _ H4.
 apply is_lam_decide to _ H3. case H7.
-search. case H5. apply mem_cd to _ H8. case H9.
+search.
+case H5. apply mems_pr_cd_D to _ H8. case H9. case H10.
 search.
 apply IH to _ H3. apply IH to _ H4. search.
 search.
-
-Theorem pr_implies_pr_cd : forall G, pr_ctx G -> exists D, pr_cd_ctx G D.
-induction on 1. intros. case H1. search.
-apply IH to H2. search.
 
 Theorem pr_diamond : forall G M N1 N2, pr_ctx G -> {G |- pr M N1} -> {G |- pr M N2} -> exists N, {G |- pr N1 N} /\ {G |- pr N2 N}.
 intros.
