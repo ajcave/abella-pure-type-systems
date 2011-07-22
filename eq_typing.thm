@@ -68,6 +68,7 @@ Theorem ctx_or_wf_rel_D_is_wf : forall G D, ctx_or_wf_rel G D -> wf_ctx D.
 induction on 1. intros. case H1. search. apply IH to H2. search.
 apply IH to H2. search.
 
+/* Oops, turns out I don't need this...
 Theorem eq_ctx' : forall G U V K G' G'' D M T, nabla x,
 {G |- of U (st K)} -> {G |- of V (st K)} ->
 append (G' x) (of x U::wf x::G) (G'' x) ->
@@ -121,8 +122,16 @@ apply member_of_wf_rel_D to _ H15.
 case H18. case H19.
 assert (member (X n1) (of n1 V::wf n1::G)).
 apply append_member_r to H4 H21. search.
-search.
+search. 
 
 Theorem eq_ctx : forall G U V K M T, nabla x, ctx G -> {G |- of U (st K)} -> {G |- of V (st K)} -> {G |- eq U V} -> {G, wf x, of x U |- of (M x) (T x)} -> {G, wf x, of x V |- of (M x) (T x)}.
 intros.
-apply eq_ctx' to H2 H3 _ _ _ H4 H5. search.
+apply eq_ctx' to H2 H3 _ _ _ H4 H5. search. */
+
+Theorem eq_ctx2 : forall G U V K M T, nabla x (y:tm), ctx G -> {G |- of U (st K)} -> {G |- of V (st K)} -> {G |- eq U V} -> {G, wf x, of x U |- of (M x) (T x)} -> {G, wf y, of y V |- of (M y) (T y)}.
+intros.
+assert {G, wf n2, of n2 V, wf n1, of n1 U |- of (M n1) (T n1)}.
+assert {G, wf n2, of n2 V |- of n2 U}.
+inst H6 with n1 = n2.
+cut H8 with H7.
+search.

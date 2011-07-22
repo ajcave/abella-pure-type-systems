@@ -1,5 +1,6 @@
 Specification "tm".
 
+/*
 Define append : olist -> olist -> olist -> prop by
  append nil Ys Ys;
  append (X::Xs) Ys (X::Zs) := append Xs Ys Zs.
@@ -31,7 +32,7 @@ monotone H2 with H.
 intros.
 apply append_member_r to H1 H3.
 search.
-search.
+search. */
 
 /* Sad that this can't be polymorphic. It's the only reason I import
  the specification. */

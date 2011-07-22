@@ -15,8 +15,8 @@ case H3. apply member_of_name to _ H6. case H7.
 apply inv_abs to _ H2.
 apply IH to _ H8 H6.
 assert {G |- eq S S'}.
-apply eq_ctx to H1 _ _ H14 H11.
-apply eq_ctx to _ _ _ H14 H12.
+apply eq_ctx2 to H1 _ _ H14 H11.
+apply eq_ctx2 to _ _ _ H14 H12.
 search.
 apply inv_abs to _ H2.
 apply IH to _ H11 H6.
@@ -69,7 +69,7 @@ search.
 apply inv_for' to _ H2.
 assert {G |- eq S S'}.
 apply IH to _ H9 H6.
-apply eq_ctx to _ _ _ H11 H10.
+apply eq_ctx2 to _ _ _ H11 H10.
 case H8. search.
 search.
 apply inv_for' to _ H2.
