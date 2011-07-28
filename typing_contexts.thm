@@ -1,5 +1,4 @@
 Specification "typing".
-Import "lib".
 
 Define name : tm -> prop by
   nabla x, name x.
@@ -37,18 +36,6 @@ search.
 Theorem rule_strengthen : forall G D S1 S2 S3, ctx G -> {G |- rule S1 S2 S3} -> {D |- rule S1 S2 S3}.
 intros. case H2. apply member_of_name to _ H3. case H4.
 search. search. search. search.
-
-/*
-Theorem member_fresh_append : forall G G' G'' U T, nabla x, ctx (G'' x) -> append (G' x) (of x U::G) (G'' x) -> member (of x T) (G' x) -> false. 
-induction on 2. intros. case H2. case H3.
-case H1. case H3.
-case H4.
-case H7.
-apply IH to _ H8 H9.
-case H4.
-assert (member (of n1 U) (of n1 U :: G)).
-apply append_member_r to H7 H8.
-apply member_prune to H9. */
 
 Theorem wf_str : forall G T N, nabla x, {G,wf x, of x T |- wf (N x)} -> {G,wf x |- wf (N x)}.
 induction on 1. intros. case H1. case H2. case H3. search.

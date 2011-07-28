@@ -1,7 +1,11 @@
 Specification "typing".
-Import "lib".
 Import "wf_contexts".
 Import "typing_contexts".
+
+Theorem member_prune : forall G E, nabla (n:tm),
+ member (E n) G -> (exists E', E = x\E').
+induction on 1. intros. case H1. search.
+apply IH to H2. search.
 
 Close sort.
 Define ctx_or_wf_rel : olist -> olist -> prop by
